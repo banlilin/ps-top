@@ -25,6 +25,7 @@ import (
 	ewsgben "github.com/sjmudd/ps-top/mutex_latency"
 	"github.com/sjmudd/ps-top/p_s/ps_table"
 	"github.com/sjmudd/ps-top/setup_instruments"
+	"github.com/sjmudd/ps-top/statement_summary"
 	essgben "github.com/sjmudd/ps-top/stages_latency"
 	tiwsbt "github.com/sjmudd/ps-top/table_io_latency"
 	tlwsbt "github.com/sjmudd/ps-top/table_lock_latency"
@@ -63,6 +64,7 @@ type App struct {
 	essgben            ps_table.Tabler // essgben.Events_stages_summary_global_by_event_name
 	memory             ps_table.Tabler // memory_usage.Object
 	users              ps_table.Tabler // user_latency.Object
+	statements         ps_table.Tabler // statement_summary.Object
 	currentView        view.View
 	wait_info.WaitInfo // embedded
 	setupInstruments   setup_instruments.SetupInstruments
@@ -129,6 +131,7 @@ func NewApp(settings Settings) *App {
 	app.essgben = essgben.NewStagesLatency(app.ctx)
 	app.memory = memory_usage.NewMemoryUsage(app.ctx)
 	app.users = user_latency.NewUserLatency(app.ctx)
+	app.statements = statement_summary.NewStatementSummary(app.ctx)
 	logger.Println("app.NewApp() Finished initialising models")
 
 	logger.Println("app.NewApp() fixLatencySetting()")
@@ -156,6 +159,7 @@ func (app *App) collectAll() {
 	app.essgben.Collect(app.dbh)
 	app.ewsgben.Collect(app.dbh)
 	app.memory.Collect(app.dbh)
+	app.statements.Collect(app.dbh)
 	logger.Println("app.collectAll() finished")
 }
 
@@ -175,6 +179,7 @@ func (app *App) setInitialFromCurrent() {
 	app.essgben.SetInitialFromCurrent()
 	app.ewsgben.SetInitialFromCurrent()
 	app.memory.SetInitialFromCurrent()
+	app.statements.SetInitialFromCurrent()
 	logger.Println("app.setInitialFromCurrent() took", time.Duration(time.Since(start)).String())
 }
 
@@ -197,6 +202,8 @@ func (app *App) Collect() {
 	case view.ViewStages:
 		app.essgben.Collect(app.dbh)
 	case view.ViewMemory:
+		app.memory.Collect(app.dbh)
+	case view.ViewStatements:
 		app.memory.Collect(app.dbh)
 	}
 	app.wi.CollectedNow()
@@ -235,6 +242,8 @@ func (app *App) Display() {
 			app.display.Display(app.essgben)
 		case view.ViewMemory:
 			app.display.Display(app.memory)
+		case view.ViewStatements:
+			app.display.Display(app.statements)
 		}
 	}
 }
@@ -266,7 +275,7 @@ func (app *App) displayNext() {
 	app.Display()
 }
 
-// Cleanup prepares  the application prior to shutting down
+// Cleanup prepares the application prior to shutting down
 func (app *App) Cleanup() {
 	app.display.Close()
 	if app.dbh != nil {

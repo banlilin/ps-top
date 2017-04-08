@@ -1,0 +1,58 @@
+
+root@somehost [performance_schema]> select EVENT_NAME, COUNT_STAR, SUM_TIMER_WAIT, SUM_ROWS_EXAMINED from events_statements_summary_global_by_event_name order by SUM_TIMER_WAIT DESC LIMIT 20;
++----------------------------------+------------+------------------+-------------------+
+| EVENT_NAME                       | COUNT_STAR | SUM_TIMER_WAIT   | SUM_ROWS_EXAMINED |
++----------------------------------+------------+------------------+-------------------+
+| statement/sql/select             |    2366024 | 1134010657232000 |          15832115 |
+| statement/sql/insert             |     102965 |  358676581245000 |                 0 |
+| statement/sql/delete             |     539253 |  156619895487000 |            799185 |
+| statement/sql/insert_select      |        268 |   79078085687000 |           1459796 |
+| statement/sql/update             |       3482 |   21372903170000 |             75729 |
+| statement/scheduler/event        |       1480 |    6245639372000 |                 0 |
+| statement/sp/stmt                |       4697 |    5723933199000 |               672 |
+| statement/sql/update_multi       |         11 |    5082249447000 |            149831 |
+| statement/sql/replace_select     |         22 |    3035530650000 |            126954 |
+| statement/com/Quit               |     148486 |    1278334466000 |                 0 |
+| statement/sql/call_procedure     |          1 |     383967503000 |                 0 |
+| statement/sql/show_status        |        248 |     249204379000 |             32540 |
+| statement/sql/delete_multi       |         78 |     239369594000 |             60990 |
+| statement/sql/show_variables     |        223 |     214567132000 |              5608 |
+| statement/sql/show_engine_status |         91 |     149844880000 |                 0 |
+| statement/sql/replace            |         76 |      95745936000 |                 0 |
+| statement/sp/set                 |       4470 |      60120912000 |                 0 |
+| statement/sql/show_slave_status  |        272 |      32298502000 |                 0 |
+| statement/sql/show_master_status |        237 |      20872123000 |                 0 |
+| statement/sql/set_option         |        288 |      20497803000 |                 0 |
++----------------------------------+------------+------------------+-------------------+
+20 rows in set (0.30 sec)
+
+root@somehost [performance_schema]>
+
+Get transformed to something like:
+
+                                     <-- sort order -->
++------------------------+----------+------------------+---------------+
+| statement type         |  count   |     latency      | rows examined |
++------------------------+----------+------------------+---------------+
+| sql/select             |  2366024 | 1134010657232000 |      15832115 |
+| sql/insert             |   102965 |  358676581245000 |             0 |
+| sql/delete             |   539253 |  156619895487000 |        799185 |
+| sql/insert_select      |      268 |   79078085687000 |       1459796 |
+| sql/update             |     3482 |   21372903170000 |         75729 |
+| scheduler/event        |     1480 |    6245639372000 |             0 |
+| sp/stmt                |     4697 |    5723933199000 |           672 |
+| sql/update_multi       |       11 |    5082249447000 |        149831 |
+| sql/replace_select     |       22 |    3035530650000 |        126954 |
+| com/Quit               |   148486 |    1278334466000 |             0 |
+| sql/call_procedure     |        1 |     383967503000 |             0 |
+| sql/show_status        |      248 |     249204379000 |         32540 |
+| sql/delete_multi       |       78 |     239369594000 |         60990 |
+| sql/show_variables     |      223 |     214567132000 |          5608 |
+| sql/show_engine_status |       91 |     149844880000 |             0 |
+| sql/replace            |       76 |      95745936000 |             0 |
+| sp/set                 |     4470 |      60120912000 |             0 |
+| sql/show_slave_status  |      272 |      32298502000 |             0 |
+| sql/show_master_status |      237 |      20872123000 |             0 |
+| sql/set_option         |      288 |      20497803000 |             0 |
++------------------------+----------+------------------+---------------+
+

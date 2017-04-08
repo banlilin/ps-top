@@ -15,14 +15,15 @@ type Code int
 // View* constants represent different views we can see
 const (
 	ViewNone    Code = iota // view nothing (should never be set)
-	ViewLatency Code = iota // view the table latency information
-	ViewOps     Code = iota // view the table information by number of operations
-	ViewIO      Code = iota // view the file I/O information
-	ViewLocks   Code = iota // view lock information
-	ViewUsers   Code = iota // view user information
-	ViewMutex   Code = iota // view mutex information
-	ViewStages  Code = iota // view SQL stages information
-	ViewMemory  Code = iota // view memory usage (5.7 only)
+	ViewLatency             // view the table latency information
+	ViewOps                 // view the table information by number of operations
+	ViewIO                  // view the file I/O information
+	ViewLocks               // view lock information
+	ViewUsers               // view user information
+	ViewMutex               // view mutex information
+	ViewStages              // view SQL stages information
+	ViewMemory              // view memory usage (5.7 only)
+        ViewStatements          // view statement summary statistics
 )
 
 // View holds the integer type of view (maybe need to fix this setup)
@@ -49,6 +50,7 @@ func init() {
 	names[ViewMutex] = "mutex_latency"
 	names[ViewStages] = "stages_latency"
 	names[ViewMemory] = "memory_usage"
+	names[ViewStatements] = "statement_summary"
 
 	tables = make(map[Code]table.Access)
 
@@ -60,6 +62,7 @@ func init() {
 	tables[ViewMutex] = table.NewAccess("performance_schema", "events_waits_summary_global_by_event_name")
 	tables[ViewStages] = table.NewAccess("performance_schema", "events_stages_summary_global_by_event_name")
 	tables[ViewMemory] = table.NewAccess("performance_schema", "memory_summary_global_by_event_name")
+	tables[ViewStatements] = table.NewAccess("performance_schema", "events_statements_summary_global_by_event_name")
 }
 
 // ValidateViews check which views are readable. If none are we give a fatal error
@@ -118,8 +121,8 @@ func setPrevAndNextViews() {
 	}
 
 	// Cleaner way to do this? Probably. Fix later.
-	prevCodeOrder := []Code{ViewMemory, ViewStages, ViewMutex, ViewUsers, ViewLocks, ViewIO, ViewOps, ViewLatency}
-	nextCodeOrder := []Code{ViewLatency, ViewOps, ViewIO, ViewLocks, ViewUsers, ViewMutex, ViewStages, ViewMemory}
+	prevCodeOrder := []Code{ViewMemory, ViewStages, ViewMutex, ViewUsers, ViewLocks, ViewIO, ViewOps, ViewLatency, ViewStatements}
+	nextCodeOrder := []Code{ViewStatements, ViewLatency, ViewOps, ViewIO, ViewLocks, ViewUsers, ViewMutex, ViewStages, ViewMemory}
 	prevView = setValidByValues(prevCodeOrder)
 	nextView = setValidByValues(nextCodeOrder)
 
