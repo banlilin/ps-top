@@ -12,7 +12,6 @@ import (
 // Context holds the common information
 type Context struct {
 	status            *global.Status    // output of show global status
-	uptime            int               // output of show global status like 'uptime'
 	variables         *global.Variables // output of show global variables
 	wantRelativeStats bool
 }
