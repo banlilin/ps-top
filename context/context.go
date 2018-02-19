@@ -3,7 +3,6 @@ package context
 
 import (
 	"strings"
-	"time"
 
 	"github.com/sjmudd/ps-top/global"
 	"github.com/sjmudd/ps-top/lib"
@@ -12,11 +11,9 @@ import (
 
 // Context holds the common information
 type Context struct {
-	last              time.Time
-	status            *global.Status
-	uptime            int
-	variables         *global.Variables
-	version           string
+	status            *global.Status    // output of show global status
+	uptime            int               // output of show global status like 'uptime'
+	variables         *global.Variables // output of show global variables
 	wantRelativeStats bool
 }
 
