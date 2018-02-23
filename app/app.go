@@ -276,6 +276,40 @@ func (app *App) Cleanup() {
 	logger.Println("App.Cleanup completed")
 }
 
+// handleEvent handles a single event by dispatching to the right routine
+func (app *App) handleEvent(inputEvent event.Event) {
+	switch inputEvent.Type {
+	case event.EventAnonymise:
+		anonymiser.Enable(!anonymiser.Enabled()) // toggle current behaviour
+	case event.EventFinished:
+		app.finished = true
+	case event.EventViewNext:
+		app.displayNext()
+	case event.EventViewPrev:
+		app.displayPrevious()
+	case event.EventDecreasePollTime:
+		if app.wi.WaitInterval() > time.Second {
+			app.wi.SetWaitInterval(app.wi.WaitInterval() - time.Second)
+		}
+	case event.EventIncreasePollTime:
+		app.wi.SetWaitInterval(app.wi.WaitInterval() + time.Second)
+	case event.EventHelp:
+		app.SetHelp(!app.Help())
+	case event.EventToggleWantRelative:
+		app.ctx.SetWantRelativeStats(!app.ctx.WantRelativeStats())
+		app.Display()
+	case event.EventResetStatistics:
+		app.resetDBStatistics()
+		app.Display()
+	case event.EventResizeScreen:
+		width, height := inputEvent.Width, inputEvent.Height
+		app.display.Resize(width, height)
+		app.Display()
+	case event.EventError:
+		log.Fatalf("Quitting because of EventError error")
+	}
+}
+
 // Run runs the application in a loop until we're ready to finish
 func (app *App) Run() {
 	logger.Println("app.Run()")
@@ -297,36 +331,7 @@ func (app *App) Run() {
 				app.setInitialFromCurrent()
 			}
 		case inputEvent := <-eventChan:
-			switch inputEvent.Type {
-			case event.EventAnonymise:
-				anonymiser.Enable(!anonymiser.Enabled()) // toggle current behaviour
-			case event.EventFinished:
-				app.finished = true
-			case event.EventViewNext:
-				app.displayNext()
-			case event.EventViewPrev:
-				app.displayPrevious()
-			case event.EventDecreasePollTime:
-				if app.wi.WaitInterval() > time.Second {
-					app.wi.SetWaitInterval(app.wi.WaitInterval() - time.Second)
-				}
-			case event.EventIncreasePollTime:
-				app.wi.SetWaitInterval(app.wi.WaitInterval() + time.Second)
-			case event.EventHelp:
-				app.SetHelp(!app.Help())
-			case event.EventToggleWantRelative:
-				app.ctx.SetWantRelativeStats(!app.ctx.WantRelativeStats())
-				app.Display()
-			case event.EventResetStatistics:
-				app.resetDBStatistics()
-				app.Display()
-			case event.EventResizeScreen:
-				width, height := inputEvent.Width, inputEvent.Height
-				app.display.Resize(width, height)
-				app.Display()
-			case event.EventError:
-				log.Fatalf("Quitting because of EventError error")
-			}
+			app.handleEvent(inputEvent)
 		}
 		// provide a hook to stop the application if the counter goes down to zero
 		if app.stdout && app.count > 0 {
