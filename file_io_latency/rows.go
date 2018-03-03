@@ -94,14 +94,6 @@ func match(text string, searchFor string) bool {
 	return result
 }
 
-// collect the data as a resultSet
-func collectResultSet(dbh *sql.DB) *ResultSet {
-	return &ResultSet{
-		collected: time.Now(),
-		data:      selectRows(dbh),
-	}
-}
-
 // Select the raw data from the database into Rows
 // - filter out empty values
 // - merge rows with the same name into a single row
