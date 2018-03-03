@@ -73,14 +73,9 @@ func (t *Object) Collect(dbh *sql.DB) {
 
 func (t *Object) makeResults() {
 	logger.Println("table_io_latency.makeResults()")
-	logger.Println("- HaveRelativeStats()", t.HaveRelativeStats())
-	logger.Println("- WantRelativeStats()", t.WantRelativeStats())
 	t.results = make(Rows, len(t.current))
 	copy(t.results, t.current)
-	if t.WantRelativeStats() {
-		logger.Println("- subtracting t.initial from t.results as WantRelativeStats()")
-		t.results.subtract(t.initial)
-	}
+	t.results.subtract(t.initial)
 
 	// logger.Println( "- sorting t.results" )
 	t.results.sort(t.wantLatency)
@@ -170,9 +165,4 @@ func (t *Object) SetWantsLatency(wantLatency bool) {
 // WantsLatency returns whether we want to see latency information
 func (t Object) WantsLatency() bool {
 	return t.wantLatency
-}
-
-// HaveRelativeStats is true for this object
-func (t Object) HaveRelativeStats() bool {
-	return true
 }

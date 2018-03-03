@@ -149,9 +149,7 @@ func (t *Object) makeResults() {
 	// logger.Println( "- t.results set from t.current" )
 	t.results = make(Rows, len(t.current))
 	copy(t.results, t.current)
-	if t.WantRelativeStats() {
-		t.results.subtract(t.initial)
-	}
+	t.results.subtract(t.initial)
 
 	t.results.sort()
 	t.totals = t.results.totals()
@@ -160,9 +158,4 @@ func (t *Object) makeResults() {
 // Len returns the length of the result set
 func (t Object) Len() int {
 	return len(t.results)
-}
-
-// HaveRelativeStats is true for this object
-func (t Object) HaveRelativeStats() bool {
-	return true
 }

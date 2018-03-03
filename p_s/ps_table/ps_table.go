@@ -12,7 +12,6 @@ type Tabler interface {
 	Collect(dbh *sql.DB)
 	Description() string
 	EmptyRowContent() string
-	HaveRelativeStats() bool
 	Headings() string
 	InitialCollectTime() time.Time
 	LastCollectTime() time.Time
@@ -20,5 +19,4 @@ type Tabler interface {
 	RowContent() []string
 	SetInitialFromCurrent()
 	TotalRowContent() string
-	WantRelativeStats() bool
 }

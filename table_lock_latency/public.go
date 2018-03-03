@@ -60,9 +60,7 @@ func (t *Object) Collect(dbh *sql.DB) {
 func (t *Object) makeResults() {
 	t.results = make(Rows, len(t.current))
 	copy(t.results, t.current)
-	if t.WantRelativeStats() {
-		t.results.subtract(t.initial)
-	}
+	t.results.subtract(t.initial)
 
 	t.results.sort()
 	t.totals = t.results.totals()
@@ -111,9 +109,4 @@ func (t Object) Description() string {
 // Len returns the length of the result set
 func (t Object) Len() int {
 	return len(t.results)
-}
-
-// HaveRelativeStats is true for this object
-func (t Object) HaveRelativeStats() bool {
-	return true
 }

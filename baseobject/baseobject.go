@@ -55,13 +55,3 @@ func (o BaseObject) Variables() *global.Variables {
 	}
 	return o.ctx.Variables()
 }
-
-// WantRelativeStats indicates whether we want relative stats or not
-// - FIXME and optmise me away
-func (o BaseObject) WantRelativeStats() bool {
-	if o.ctx == nil {
-		log.Fatal("BaseObject.WantRelativeStats(): o.ctx should not be nil")
-		return false
-	}
-	return o.ctx.WantRelativeStats()
-}

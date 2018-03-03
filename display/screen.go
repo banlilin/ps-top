@@ -30,7 +30,7 @@ func NewScreenDisplay(limit int, onlyTotals bool) *ScreenDisplay {
 
 // Display displays the wanted view to the screen
 func (s *ScreenDisplay) Display(t GenericData) {
-	s.screen.PrintAt(0, 0, s.HeadingLine(t.HaveRelativeStats(), t.WantRelativeStats(), t.InitialCollectTime(), t.LastCollectTime()))
+	s.screen.PrintAt(0, 0, s.HeadingLine(t.InitialCollectTime(), t.LastCollectTime()))
 	s.screen.PrintAt(0, 1, t.Description())
 	s.screen.BoldPrintAt(0, 2, t.Headings())
 
@@ -110,8 +110,6 @@ func (s *ScreenDisplay) pollEvent() event.Event {
 				e = event.Event{Type: event.EventHelp}
 			case 'q':
 				e = event.Event{Type: event.EventFinished}
-			case 't':
-				e = event.Event{Type: event.EventToggleWantRelative}
 			case 'z':
 				e = event.Event{Type: event.EventResetStatistics}
 			}

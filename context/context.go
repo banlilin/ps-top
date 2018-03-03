@@ -58,13 +58,3 @@ func (c Context) Uptime() int {
 func (c Context) Variables() *global.Variables {
 	return c.variables
 }
-
-// SetWantRelativeStats tells what we want to see
-func (c *Context) SetWantRelativeStats(w bool) {
-	c.wantRelativeStats = w
-}
-
-// WantRelativeStats tells us what we have asked for
-func (c Context) WantRelativeStats() bool {
-	return c.wantRelativeStats
-}

@@ -35,16 +35,11 @@ func (d BaseDisplay) MyName() string {
 }
 
 // HeadingLine returns the heading line as a string
-func (d *BaseDisplay) HeadingLine(haveRelativeStats, wantRelativeStats bool, initial, last time.Time) string {
+func (d *BaseDisplay) HeadingLine(initial, last time.Time) string {
 	heading := d.MyName() + " " + d.ctx.Version() + " - " + nowHHMMSS() + " " + d.ctx.Hostname() + " / " + d.ctx.MySQLVersion() + ", up " + fmt.Sprintf("%-16s", lib.Uptime(d.Uptime()))
 
-	if haveRelativeStats {
-		if wantRelativeStats {
-			heading += " [REL] " + fmt.Sprintf("%.0f seconds", time.Since(initial).Seconds())
-		} else {
-			heading += " [ABS]             "
-		}
-	}
+	heading += "       " + fmt.Sprintf("%.0f seconds", time.Since(initial).Seconds())
+
 	return heading
 }
 

@@ -64,9 +64,7 @@ func (t *Object) Collect(dbh *sql.DB) {
 func (t *Object) makeResults() {
 	t.results = make(Rows, len(t.current))
 	copy(t.results, t.current)
-	if t.WantRelativeStats() {
-		t.results.subtract(t.initial)
-	}
+	t.results.subtract(t.initial)
 
 	t.results.sort()
 	t.totals = t.results.totals()
@@ -116,9 +114,4 @@ func (t Object) Description() string {
 	}
 
 	return fmt.Sprintf("File I/O Latency (file_summary_by_instance) %4d row(s)    ", count)
-}
-
-// HaveRelativeStats is true for this object
-func (t Object) HaveRelativeStats() bool {
-	return true
 }

@@ -99,7 +99,6 @@ func NewApp(settings Settings) *App {
 	ensurePerformanceSchemaEnabled(variables)
 
 	app.ctx = context.NewContext(status, variables)
-	app.ctx.SetWantRelativeStats(true)
 	app.count = settings.Count
 	app.finished = false
 
@@ -295,9 +294,6 @@ func (app *App) handleEvent(inputEvent event.Event) {
 		app.wi.SetWaitInterval(app.wi.WaitInterval() + time.Second)
 	case event.EventHelp:
 		app.SetHelp(!app.Help())
-	case event.EventToggleWantRelative:
-		app.ctx.SetWantRelativeStats(!app.ctx.WantRelativeStats())
-		app.Display()
 	case event.EventResetStatistics:
 		app.resetDBStatistics()
 		app.Display()
